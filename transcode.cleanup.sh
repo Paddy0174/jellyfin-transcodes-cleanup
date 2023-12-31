@@ -1,10 +1,10 @@
 #!/bin/bash
 # ! /bin/sh
 
-SCRIPT_DIR=/config/ffmpeg
-TRANSCODES_DIR=/config/transcodes
-SEMAPHORE_DIR=/config/semaphore # use RAM drive for FFMPEG transcoding PID and PAUSE files
-LOG_DIR=/config/log
+SCRIPT_DIR=${JTC_SCRIPT_DIR}
+TRANSCODES_DIR=${JTC_TRANSCODES_DIR}
+SEMAPHORE_DIR=${JTC_SEMAPHORE_DIR} # use RAM drive for FFMPEG transcoding PID and PAUSE files
+LOG_DIR=${JTC_LOG_DIR}
 CLEANUP_LOG=$LOG_DIR/transcode.cleanup.log # create a single log file (easier when using OFF, WARN or INFO level logging)
 CLEANUP_LOG_MAXSIZE=10485760 # maximum size of the log file reaching which the log file will be truncated (default is 10485760 bytes=10 MB)
 #SEMAPHORE_DIR=$SCRIPT_DIR/log # use mounted directory on host machine for easier access

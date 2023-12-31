@@ -1,4 +1,11 @@
 # Jellyfin-Transcodes-cleanup
+
+## Fork by Paddy0174
+This fork is intended to bring a little easier install by utilizing a Dockerfile to build the jellyfin image and include the scripts from this repo.
+
+Some other changes are made as well, eg. the jellyfin image from linuxserver.io (latest) is used to build the image.
+
+## Old readme from original repo
 Cleanup script for autonomous cleanup of [Jellyfin media server](https://github.com/jellyfin/jellyfin) transcodes directory.
 The script works with both - transcoding enabled or disabled, in Jellyfin settings (Server -> Playback). The script will automatically start when media playback is started in Jellyfin, and it will automatically terminate itself if no playback is running in given time period (eg, 1 hour).
 

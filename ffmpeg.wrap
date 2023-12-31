@@ -2,13 +2,13 @@
 #title           :  Wrapper script for FFMPEG customizations
 #description     :  This script is a wrapper for Jellyfin ffmpeg
 
-FFMPEG_DIR=/usr/lib/jellyfin-ffmpeg # non-Docker server path to FFMPEG usually is /usr/bin/ffmpeg
-SCRIPT_DIR=/config/ffmpeg
-TRANSCODES_DIR=/config/transcodes
-CLEANUP_PROG=$SCRIPT_DIR/transcode.cleanup.sh
+FFMPEG_DIR=${JTC_FFMPEG_DIR} # non-Docker server path to FFMPEG usually is /usr/bin/ffmpeg
+SCRIPT_DIR=${JTC_SCRIPT_DIR}
+TRANSCODES_DIR=${JTC_TRANSCODES_DIR}
+CLEANUP_PROG=${JTC_CLEANUP_PROG}
 
-SEMAPHORE_DIR=/config/semaphore # use RAM drive for FFMPEG transcoding PID and PAUSE files
-LOG_DIR=/config/log
+SEMAPHORE_DIR=${JTC_SEMAPHORE_DIR} # use RAM drive for FFMPEG transcoding PID and PAUSE files
+LOG_DIR=${JTC_LOG_DIR}
 CLEANUP_LOG=$LOG_DIR/transcode.cleanup.log # create a single log file (easier when using OFF, WARN or INFO level logging)
 #SEMAPHORE_DIR=$SCRIPT_DIR/log # use mounted directory on host machine for easier access
 #LOG_DIR=$SCRIPT_DIR/log
