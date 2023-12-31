@@ -19,10 +19,10 @@ RUN apt-get update \
 
 # download jellyfin-transcodes-cleanup
 RUN mkdir -p /config \
-    && mkdir -p /config/jellyfin-transcodes-cleanup/semaphore
-    && mkdir -p /config/jellyfin-transcodes-cleanup/logs
     && cd /config \
-    && git clone https://github.com/Paddy0174/jellyfin-transcodes-cleanup.git
+    && git clone https://github.com/Paddy0174/jellyfin-transcodes-cleanup.git \
+    && mkdir -p /config/jellyfin-transcodes-cleanup/semaphore \
+    && mkdir -p /config/jellyfin-transcodes-cleanup/logs
 
 # set executable permission
 RUN chmod +x /config/jellyfin-transcodes-cleanup/transcode.cleanup.sh \
