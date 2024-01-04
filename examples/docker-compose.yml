@@ -1,0 +1,27 @@
+---
+version: "2.1"
+services:
+  jellyfin:
+    image: jellyfin-transcode-cleanup:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC+1
+      - JELLYFIN_PublishedServerUrl=192.168.178.10 #optional
+      - PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/jellyfin-ffmpeg"
+      - JELLYFIN_FFMPEG="/usr/lib/jellyfin-ffmpeg/ffmpeg.wrap"
+    group_add:
+      - "104"
+    volumes:
+      - ./config:/config
+      - /path/to/movies:/movies
+      - /path/to/series:/series
+    ports:
+      - 8096:8096
+      - 8920:8920 #optional
+      - 7359:7359/udp #optional
+      - 1900:1900/udp #optional
+    restart: unless-stopped
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128

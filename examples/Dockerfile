@@ -1,14 +1,4 @@
-# Dockerfile for Jellyfin
-# Added transcode directory cleanup
-
-# set some env variables
-ENV JTC_FFMPEG_DIR='/config/jellyfin-transcodes-cleanup'
-    JTC_SCRIPT_DIR='/config/jellyfin-transcodes-cleanup'
-    JTC_TRANSCODES_DIR='/config/data/transcodes'
-    JTC_SEMAPHORE_DIR='/config/jellyfin-transcodes-cleanup/semaphore'
-    JTC_LOG_DIR='/config/jellyfin-transcodes-cleanup/logs'
-    JTC_CLEANUP_PROG='/config/jellyfin-transcodes-cleanup/transcode.cleanup.sh'
-#    JTC_CLEANUP_LOG_MAXSIZE=''
+# Dockerfile for Jellyfin including transcode directory cleanup
 
 # load the base image for Jellyfin from linuxserver.io
 FROM lscr.io/linuxserver/jellyfin:latest
@@ -31,3 +21,12 @@ RUN chmod +x /config/jellyfin-transcodes-cleanup/transcode.cleanup.sh \
 # set the symlinks to include .wrap
 RUN ln -sf /config/jellyfin-transcodes-cleanup/ffmpeg.wrap /usr/lib/jellyfin-ffmpeg/ffmpeg.wrap \
     && ln -sf /usr/lib/jellyfin-ffmpeg/ffprobe /usr/lib/jellyfin-ffmpeg/ffprobe.wrap
+
+# set some env variables
+ENV JTC_FFMPEG_DIR='/config/jellyfin-transcodes-cleanup'
+ENV JTC_SCRIPT_DIR='/config/jellyfin-transcodes-cleanup'
+ENV JTC_TRANSCODES_DIR='/config/data/transcodes'
+ENV JTC_SEMAPHORE_DIR='/config/jellyfin-transcodes-cleanup/semaphore'
+ENV JTC_LOG_DIR='/config/jellyfin-transcodes-cleanup/logs'
+ENV JTC_CLEANUP_PROG='/config/jellyfin-transcodes-cleanup/transcode.cleanup.sh'
+# ENV JTC_CLEANUP_LOG_MAXSIZE=''

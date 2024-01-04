@@ -1,11 +1,91 @@
 # Jellyfin-Transcodes-cleanup
 
 ## Fork by Paddy0174
-This fork is intended to bring a little easier install by utilizing a Dockerfile to build the jellyfin image and include the scripts from this repo.
+This fork is intended to bring a little easier install by utilizing a Dockerfile to build the jellyfin image and include the scripts from the original repo.
 
-Some other changes are made as well, eg. the jellyfin image from linuxserver.io (latest) is used to build the image.
+## What's this fork about
+I wasn't happy with the way I needed to install these great scripts from RTUnit. So I decided to change some things and make it easier, especially with upgrades, where you won't need to change things inside the docker container (again). Please give credit to him, as I only did some minor changes to make it easier for myself! 
 
-## Old readme from original repo
+This is done by using a `Dockerfile` and a `docker-compose-yml`. 
+
+One thing to note: I use the `jellyfin` docker-image from `linuxserver.io` instead of the original jellyfin image. The `linuxserver.io` image is supported by the Jellyfin team as well, and as I'm running other docker images from `linuxserver.io`, so it makes sense for me. If you want to, you can always change the name of the image in the `Dockerfile`.
+
+## Installation
+1 Open a terminal and move to the home folder of your user.
+1 Create a new directory by typing `mkdir jellyfin-transcode && cd $_`  
+1 Create a new file named `Dockerfile` and paste the following code into it:
+  ```
+  # Dockerfile for Jellyfin including transcode directory cleanup
+  
+  # load the base image for Jellyfin from linuxserver.io
+  FROM lscr.io/linuxserver/jellyfin:latest
+  
+  # install procps and htop
+  RUN apt-get update \
+      && apt-get install -y procps htop git --no-install-recommends
+  
+  # download jellyfin-transcodes-cleanup
+  RUN mkdir -p /config \
+      && cd /config \
+      && git clone https://github.com/Paddy0174/jellyfin-transcodes-cleanup.git \
+      && mkdir -p /config/jellyfin-transcodes-cleanup/semaphore \
+      && mkdir -p /config/jellyfin-transcodes-cleanup/logs
+  
+  # set executable permission
+  RUN chmod +x /config/jellyfin-transcodes-cleanup/transcode.cleanup.sh \
+      && chmod +x /config/jellyfin-transcodes-cleanup/ffmpeg.wrap
+  
+  # set the symlinks to include .wrap
+  RUN ln -sf /config/jellyfin-transcodes-cleanup/ffmpeg.wrap /usr/lib/jellyfin-ffmpeg/ffmpeg.wrap \
+      && ln -sf /usr/lib/jellyfin-ffmpeg/ffprobe /usr/lib/jellyfin-ffmpeg/ffprobe.wrap
+  
+  # set some env variables
+  ENV JTC_FFMPEG_DIR='/config/jellyfin-transcodes-cleanup'
+  ENV JTC_SCRIPT_DIR='/config/jellyfin-transcodes-cleanup'
+  ENV JTC_TRANSCODES_DIR='/config/data/transcodes'
+  ENV JTC_SEMAPHORE_DIR='/config/jellyfin-transcodes-cleanup/semaphore'
+  ENV JTC_LOG_DIR='/config/jellyfin-transcodes-cleanup/logs'
+  ENV JTC_CLEANUP_PROG='/config/jellyfin-transcodes-cleanup/transcode.cleanup.sh'
+  # ENV JTC_CLEANUP_LOG_MAXSIZE=''
+  
+  ```  
+1 Create another new file, `docker-compose.yml` and paste the following code into it:
+  ```
+  ---
+  version: "2.1"
+  services:
+    jellyfin:
+      image: jellyfin-transcode-cleanup:latest
+      container_name: jellyfin
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Etc/UTC+1
+        - JELLYFIN_PublishedServerUrl=192.168.178.10 #optional
+        - PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/jellyfin-ffmpeg"
+        - JELLYFIN_FFMPEG="/usr/lib/jellyfin-ffmpeg/ffmpeg.wrap"
+      group_add:
+        - "104"
+      volumes:
+        - ./config:/config
+        - /path/to/movies:/movies
+        - /path/to/series:/series
+      ports:
+        - 8096:8096
+        - 8920:8920 #optional
+        - 7359:7359/udp #optional
+        - 1900:1900/udp #optional
+      restart: unless-stopped
+      devices:
+        - /dev/dri/renderD128:/dev/dri/renderD128
+  ```  
+1 There are a few entries in both files, that you might like to change. You can find more information about these a little downwards.
+1 When you're done with your changes, we are now ready to build the image and start the container.
+1 Now let's build the image by typing `docker build -t jellyfin-transcode-cleanup:latest .`. Note the dot at the end of the command! It is very important, as docker without it will give you an error.
+1 Now let's start the docker image we just created by typing `docker compose up -d`.
+1 That's it, your Jellyfin should now run as docker container with the transcoding cleanup enabled and running. 
+
+# Readme from the original repo  
 Cleanup script for autonomous cleanup of [Jellyfin media server](https://github.com/jellyfin/jellyfin) transcodes directory.
 The script works with both - transcoding enabled or disabled, in Jellyfin settings (Server -> Playback). The script will automatically start when media playback is started in Jellyfin, and it will automatically terminate itself if no playback is running in given time period (eg, 1 hour).
 
